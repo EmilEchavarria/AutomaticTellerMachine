@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simulador de Cajero Automático</title>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3097/3097960.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen font-sans text-indigo-900 selection:bg-indigo-300 selection:text-indigo-900">
+
+  <!-- Contenedor principal -->
+<main class="max-w-[1800px] mx-auto px-6 sm:px-12 py-12 grid gap-16">
+
+    <!-- HEADER con logo e instrucciones -->
+    <section class="text-center w-full px-6" aria-label="Introducción al simulador">
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/3097/3097960.png"
+        alt="Icono Cajero Automático"
+        class="w-28 mx-auto mb-8 animate-bounceSlow select-none"
+        aria-hidden="true"
+        loading="lazy"
+      />
+      <h1
+        class="text-6xl font-extrabold drop-shadow-lg tracking-tight leading-tight"
+        tabindex="0"
+      >
+        Simulador de Cajero Automático
+      </h1>
+      <p
+        class="mt-4 max-w-3xl mx-auto text-lg text-gray-700 leading-relaxed"
+        tabindex="0"
+      >
+        Simula el retiro de dinero en distintos modos de dispensación.<br />
+        Ingresa un monto múltiplo de 100 y selecciona tu modo preferido.
+      </p>
+    </section>
+
+    <!-- FORMULARIO PRINCIPAL -->
+<form      
+action="/retirar"
+      method="POST"
+      class="w-full mx-auto bg-gradient-to-br from-indigo-100 via-indigo-50 to-blue-50 p-10 rounded-3xl shadow-2xl grid gap-10"
+      aria-label="Formulario para retirar dinero del cajero automático"
+      novalidate
+    >
+      <!-- Input monto -->
+      <div>
+        <label
+          for="monto"
+          class="block text-indigo-900 font-semibold text-xl mb-3 select-none"
+          >Monto a retirar</label
+        >
+        <input
+          type="number"
+          name="monto"
+          id="monto"
+          placeholder="Ej. 1200"
+          min="100"
+          step="100"
+          required
+          aria-describedby="montoHelp"
+          class="peer w-full rounded-2xl border-2 border-indigo-300 px-7 py-4 text-2xl font-bold text-indigo-900 placeholder-indigo-400
+            shadow-lg focus:outline-none focus:ring-4 focus:ring-indigo-400 focus:border-indigo-500 transition duration-300"
+          autocomplete="off"
+        />
+        <p
+          id="montoHelp"
+          class="mt-2 text-indigo-700 text-sm italic select-none"
+          tabindex="0"
+        >
+          Solo números enteros y múltiplos de 100. Ej: 100, 200, 500, 1000, 1200...
+        </p>
+      
+      </div>
+
+      <!-- Select modo dispensación -->
+      <div>
+        <label
+          for="modo"
+          class="block text-indigo-900 font-semibold text-xl mb-3 select-none"
+          >Modo de dispensación</label
+        >
+        <select
+          id="modo"
+          name="modo"
+          aria-describedby="modoHelp"
+          class="w-full rounded-2xl border-2 border-indigo-300 px-6 py-3 text-xl font-semibold text-indigo-900
+                 shadow-md focus:outline-none focus:ring-4 focus:ring-indigo-400 focus:border-indigo-500 transition duration-300"
+        >
+          <option value="eficiente" selected>🧠 Eficiente (menos papeletas)</option>
+          <option value="100-500">💵 Solo 100 y 500</option>
+          <option value="200-1000">💶 Solo 200 y 1000</option>
+        </select>
+        <p
+          id="modoHelp"
+          class="mt-2 text-indigo-700 text-sm italic select-none"
+          tabindex="0"
+        >
+          Elige qué billetes quieres recibir.
+        </p>
+      </div>
+
+      <!-- Botón submit -->
+      <button
+        type="submit"
+        class="mt-3 rounded-3xl bg-indigo-700 hover:bg-indigo-800 active:bg-indigo-900
+               text-white font-extrabold text-3xl px-10 py-5 shadow-xl
+               focus:outline-none focus:ring-4 focus:ring-indigo-500 transition duration-300"
+        aria-live="polite"
+        aria-label="Botón para retirar dinero"
+      >
+        Retirar Dinero
+      </button>
+    </form>
+
+    <!-- Mensajes dinámicos: error o éxito -->
+    {{#if resultado}}
+      {{#if resultado.error}}
+        <section
+          role="alert"
+          aria-live="assertive"
+          class="max-w-4xl mx-auto mt-16 rounded-3xl bg-red-50 border-4 border-red-400 shadow-2xl p-8 flex gap-6 items-center"
+          tabindex="0"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-16 w-16 text-red-600 flex-shrink-0"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m-6 4h6m2 0a2 2 0 002-2v-6a2 2 0 00-2-2h-6a2 2 0 00-2 2v6a2 2 0 002 2z"
+            />
+          </svg>
+          <div class="text-red-700 font-semibold text-xl leading-relaxed">
+            <h2 class="text-3xl font-extrabold mb-3">Error al retirar dinero</h2>
+            <p>{{resultado.error}}</p>
+          </div>
+        </section>
+      {{else}}
+        <section
+          role="status"
+          aria-live="polite"
+          class="max-w-4xl mx-auto mt-16 rounded-3xl bg-green-50 border-4 border-green-400 shadow-2xl p-8"
+          tabindex="0"
+        >
+          <h2
+            class="text-4xl font-extrabold mb-6 flex items-center gap-4 text-green-800"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-16 w-16 text-green-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            Retiro exitoso - {{resultado.monto}} pesos
+          </h2>
+          <p class="italic mb-8 text-lg text-green-700 font-semibold">
+            {{resultado.mensaje}}
+          </p>
+
+          <div
+            class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-8"
+            aria-label="Distribución de billetes entregados"
+          >
+            {{#each resultado.distribucion}}
+              <article
+                tabindex="0"
+                class="bg-white rounded-3xl shadow-lg p-6 flex flex-col items-center justify-center gap-4
+                      hover:shadow-2xl focus:shadow-2xl focus:outline-none transition-shadow duration-300"
+              >
+                <svg
+  xmlns="http://www.w3.org/2000/svg"
+  class="w-16 h-auto select-none"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  role="img"
+>
+  <rect x="2" y="7" width="20" height="10" rx="2" ry="2" fill="#10B981" stroke="#047857"/>
+  <circle cx="12" cy="12" r="3" fill="#D1FAE5" stroke="#047857"/>
+  <line x1="7" y1="12" x2="7" y2="12" stroke="#047857" stroke-width="2" />
+  <line x1="17" y1="12" x2="17" y2="12" stroke="#047857" stroke-width="2" />
+</svg>
+
+                <h3 class="text-indigo-900 font-bold text-2xl">{{@key}} pesos</h3>
+                <p
+                  class="text-green-700 font-extrabold text-xl"
+                  aria-label="{{this}} papeleta(s) de {{@key}} pesos"
+                >
+                  {{this}} papeleta(s)
+                </p>
+              </article>
+            {{/each}}
+          </div>
+        </section>
+      {{/if}}
+    {{/if}}
+
+    <!-- Historial avanzado con filtros y paginación simulada -->
+    {{#if historial.length}}
+      <section
+        class="max-w-6xl mx-auto mt-20 bg-white rounded-3xl shadow-2xl p-10 border border-indigo-200"
+        aria-label="Historial de retiros anteriores"
+      >
+        <header
+          class="flex flex-col sm:flex-row sm:justify-between items-center mb-8 gap-6"
+          aria-label="Control del historial de retiros"
+        >
+          <h2
+            class="text-4xl font-extrabold text-indigo-700 flex items-center gap-3 select-none"
+            tabindex="0"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-10 w-10 text-indigo-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 12h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2h-6a2 2 0 00-2 2v3a2 2 0 002 2zm-6 0a2 2 0 00-2 2v3a2 2 0 002 2h6a2 2 0 002-2v-3a2 2 0 00-2-2H9z"
+              />
+            </svg>
+            Historial de Retiros
+          </h2>
+
+          <div class="flex flex-wrap gap-4 items-center">
+            <button
+              type="button"
+              onclick="if(confirm('¿Seguro que deseas limpiar el historial?')) { fetch('/limpiar-historial', { method: 'POST' }).then(() => location.reload()) }"
+              class="bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-bold px-7 py-3 rounded-3xl shadow-lg
+                     focus:outline-none focus:ring-4 focus:ring-red-400 transition duration-300 select-none"
+              aria-label="Limpiar historial de retiros"
+            >
+              🗑 Limpiar Historial
+            </button>
+
+            <!-- Filtro por modo -->
+            <label
+              for="filtroModo"
+              class="text-indigo-700 font-semibold select-none"
+              >Filtrar por modo:</label
+            >
+            <select
+              id="filtroModo"
+              class="rounded-2xl border-2 border-indigo-300 px-5 py-2 text-indigo-900 font-semibold shadow-md
+                     focus:outline-none focus:ring-4 focus:ring-indigo-400 focus:border-indigo-500 transition duration-300"
+              onchange="filtrarHistorial(this.value)"
+              aria-label="Filtrar historial por modo de dispensación"
+            >
+              <option value="todos" selected>Todos</option>
+              <option value="eficiente">Eficiente</option>
+              <option value="100-500">Solo 100 y 500</option>
+              <option value="200-1000">Solo 200 y 1000</option>
+            </select>
+          </div>
+        </header>
+
+        <div
+          id="historialContainer"
+          class="overflow-x-auto max-h-[30rem] scrollbar-thin scrollbar-thumb-indigo-400 scrollbar-track-indigo-100 rounded-2xl border border-indigo-200"
+          role="region"
+          aria-label="Tabla del historial de retiros"
+          tabindex="0"
+        >
+          <table class="w-full border-collapse text-indigo-900 text-lg font-medium">
+            <thead class="bg-indigo-100 sticky top-0 z-10">
+              <tr>
+                <th class="border border-indigo-300 px-6 py-4 rounded-tl-3xl text-left">Fecha y Hora</th>
+                <th class="border border-indigo-300 px-6 py-4 text-center">Monto (MXN)</th>
+                <th class="border border-indigo-300 px-6 py-4 text-center">Modo</th>
+                <th class="border border-indigo-300 px-6 py-4 rounded-tr-3xl text-left">Distribución</th>
+              </tr>
+            </thead>
+            <tbody id="historialBody">
+              <!-- Aquí se generan las filas con cada retiro -->
+              {{#each historial}}
+                <tr
+                  class="even:bg-indigo-50 hover:bg-indigo-200 focus-within:bg-indigo-300 cursor-pointer transition-colors"
+                  tabindex="0"
+                  data-modo="{{this.modo}}"
+                  aria-label="Retiro realizado el {{this.fecha}} por {{this.monto}} pesos en modo {{this.modo}}"
+                >
+                  <td class="border border-indigo-300 px-6 py-5 font-mono" tabindex="0">{{this.fecha}}</td>
+                  <td class="border border-indigo-300 px-6 py-5 font-semibold text-center" tabindex="0">{{this.monto}} $</td>
+                  <td class="border border-indigo-300 px-6 py-5 lowercase italic font-semibold text-center" tabindex="0">{{this.modo}}</td>
+                  <td class="border border-indigo-300 px-6 py-5" tabindex="0">
+                    <ul class="flex flex-wrap gap-3" aria-label="Billetes entregados">
+                      {{#each this.distribucion}}
+                        <li
+                          class="bg-indigo-100 text-indigo-900 rounded-full px-4 py-1 shadow-inner font-semibold"
+                          tabindex="0"
+                          aria-label="{{this}} billete(s) de {{@key}} pesos"
+                        >
+                          {{this}} × {{@key}}$
+                        </li>
+                      {{/each}}
+                    </ul>
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginación simulada -->
+        <nav
+          aria-label="Paginación del historial de retiros"
+          class="mt-6 flex justify-center gap-3 select-none"
+        >
+          <button
+            type="button"
+            id="btnPrevPage"
+            class="px-5 py-2 rounded-xl bg-indigo-300 text-indigo-800 font-bold shadow-md hover:bg-indigo-400 disabled:opacity-50"
+            disabled
+            aria-disabled="true"
+            aria-label="Página anterior"
+          >
+            ← Anterior
+          </button>
+          <span id="paginaActual" class="text-indigo-900 font-bold text-lg select-text" aria-live="polite">Página 1</span>
+          <button
+            type="button"
+            id="btnNextPage"
+            class="px-5 py-2 rounded-xl bg-indigo-300 text-indigo-800 font-bold shadow-md hover:bg-indigo-400"
+            aria-label="Página siguiente"
+          >
+            Siguiente →
+          </button>
+        </nav>
+      </section>
+
+      <script>
+        // Filtrado simple del historial por modo
+        function filtrarHistorial(modo) {
+          const filas = document.querySelectorAll("#historialBody tr");
+          filas.forEach((fila) => {
+            if (modo === "todos" || fila.dataset.modo === modo) {
+              fila.style.display = "";
+            } else {
+              fila.style.display = "none";
+            }
+          });
+          // Reiniciar paginación a página 1 tras filtro
+          paginaActual = 1;
+          mostrarPagina(paginaActual);
+        }
+
+        // Paginación básica (10 filas por página)
+        let paginaActual = 1;
+        const filasPorPagina = 10;
+        const filasHistorial = Array.from(document.querySelectorAll("#historialBody tr"));
+
+        function mostrarPagina(num) {
+          // Considerar solo filas visibles para filtrado
+          const filasVisibles = filasHistorial.filter(fila => fila.style.display !== "none");
+          const totalPaginas = Math.ceil(filasVisibles.length / filasPorPagina);
+          const inicio = (num - 1) * filasPorPagina;
+          const fin = inicio + filasPorPagina;
+
+          filasHistorial.forEach(fila => fila.style.display = "none");
+          filasVisibles.forEach((fila, i) => {
+            fila.style.display = (i >= inicio && i < fin) ? "" : "none";
+          });
+
+          // Actualizar botones y texto
+          document.getElementById("paginaActual").textContent = `Página ${num} de ${totalPaginas || 1}`;
+          document.getElementById("btnPrevPage").disabled = num === 1;
+          document.getElementById("btnPrevPage").setAttribute("aria-disabled", num === 1);
+          document.getElementById("btnNextPage").disabled = num === totalPaginas || totalPaginas === 0;
+          document.getElementById("btnNextPage").setAttribute("aria-disabled", num === totalPaginas || totalPaginas === 0);
+        }
+
+        document.getElementById("btnPrevPage").addEventListener("click", () => {
+          if (paginaActual > 1) {
+            paginaActual--;
+            mostrarPagina(paginaActual);
+          }
+        });
+
+        document.getElementById("btnNextPage").addEventListener("click", () => {
+          // Considerar solo filas visibles para filtrado
+          const filasVisibles = filasHistorial.filter(fila => fila.style.display !== "none");
+          const totalPaginas = Math.ceil(filasVisibles.length / filasPorPagina);
+          if (paginaActual < totalPaginas) {
+            paginaActual++;
+            mostrarPagina(paginaActual);
+          }
+        });
+
+        // Mostrar primera página al cargar
+        window.addEventListener("DOMContentLoaded", () => {
+          mostrarPagina(paginaActual);
+        });
+      </script>
+    {{/if}}
+
+    <!-- Sección de ayuda y consejos para usuario -->
+    <section
+      class="max-w-4xl mx-auto mt-24 p-8 bg-gradient-to-tr from-indigo-100 to-blue-100 rounded-3xl shadow-xl"
+      aria-label="Consejos para un mejor uso del cajero automático"
+      tabindex="0"
+    >
+      <h2 class="text-4xl font-extrabold text-indigo-700 mb-6 text-center select-none">
+        💡 Consejos para un retiro exitoso
+      </h2>
+      <ul class="list-disc list-inside text-indigo-800 space-y-3 text-lg max-w-3xl mx-auto leading-relaxed">
+        <li>El monto debe ser múltiplo de 100 para que el cajero pueda dispensar billetes.</li>
+        <li>Elige el modo eficiente para recibir la menor cantidad posible de billetes.</li>
+        <li>En modos específicos, solo se entregan los billetes indicados. Ejemplo: modo 200-1000 solo entrega billetes de 200 y 1000 pesos.</li>
+        <li>Si recibes un error, revisa que el monto sea compatible con el modo seleccionado.</li>
+        <li>Recuerda revisar tu historial para llevar control de tus retiros anteriores.</li>
+        <li>Utiliza la función de filtrado para ver retiros por modo y mantener un mejor seguimiento.</li>
+        <li>El historial puede ser limpiado para empezar un seguimiento nuevo en cualquier momento.</li>
+      </ul>
+    </section>
+
+  </main>
+
+</body>
+</html>

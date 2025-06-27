@@ -1,0 +1,51 @@
+
+  @keyframes bounceSlow {
+    0%, 100% {
+      transform: translateY(-10%);
+    }
+    50% {
+      transform: translateY(0);
+    }
+  }
+  .animate-bounceSlow {
+    animation: bounceSlow 3.8s ease-in-out infinite;
+  }
+
+  /* Scrollbar estilos */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #818cf8 #e0e7ff;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: #e0e7ff;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #818cf8;
+    border-radius: 8px;
+    border: 3px solid #e0e7ff;
+  }
+
+
+   @keyframes bounceSlow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    .animate-bounceSlow {
+      animation: bounceSlow 3s infinite;
+    }
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background-color: #6366f1; 
+      border-radius: 9999px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-track {
+      background-color: #e0e7ff; 
+      border-radius: 9999px;
+    }

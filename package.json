@@ -1,0 +1,18 @@
+{
+  "name": "automatictellermachine",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "dev": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.0.0-beta.1",
+    "express-handlebars": "^8.0.3"
+  }
+}
